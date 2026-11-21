@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antonia Art | E-Commerce & Gestión Artesanal en Madera</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- ePayco Checkout SDK -->
+    <script type="text/javascript" src="https://checkout.epayco.co/checkout.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        violeta: {
+                            50: '#fcf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7e22ce',
+                            800: '#6b21a8',
+                            900: '#581c87',
+                            950: '#3b0764',
+                        },
+                        madera: {
+                            50: '#fdfbf7',
+                            100: '#f7f1e5',
+                            200: '#eddcc4',
+                            300: '#dfbf99',
+                            400: '#cf9d6d',
+                            500: '#bd7b46',
+                            600: '#9c5b31',
+                            700: '#7a4126',
+                            800: '#5c3121',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f3e8ff; }
+        ::-webkit-scrollbar-thumb { background: #c084fc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #7e22ce; }
+        .glass-card { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="bg-violeta-50 text-slate-800 font-sans antialiased selection:bg-violeta-700 selection:text-white">
+
+    <!-- Toast Notification Container (Reemplaza alert()) -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4"></div>
+
+    <!-- Header / Navigation -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-violeta-100 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <button onclick="switchView('tienda')" class="flex items-center gap-3 group text-left focus:outline-none">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-violeta-800 to-violeta-600 flex items-center justify-center text-white shadow-lg shadow-violeta-700/20 group-hover:scale-105 transition-transform">
+                        <i class="fa-solid fa-tree text-xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-serif font-bold text-2xl tracking-tight text-violeta-950">
+                            Antonia<span class="text-violeta-700 font-sans font-extrabold">Art</span>
+                        </span>
+                        <span class="text-[10px] uppercase tracking-widest text-madera-600 font-semibold -mt-1">Arte en Madera</span>
+                    </div>
+                </button>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center space-x-2 text-sm font-semibold">
+                    <button onclick="switchView('tienda')" id="nav-tienda" class="nav-tab px-4 py-2 rounded-xl bg-violeta-100 text-violeta-900 transition">
+                        <i class="fa-solid fa-store mr-1.5"></i>Tienda
+                    </button>
+                    <button onclick="switchView('ordenes')" id="nav-ordenes" class="nav-tab hidden px-4 py-2 rounded-xl text-slate-600 hover:bg-violeta-50 hover:text-violeta-800 transition">
+                        <i class="fa-solid fa-box-open mr-1.5"></i>Órdenes
+                    </button>
+                    <button onclick="switchView('gestion-productos')" id="nav-gestion-productos" class="nav-tab hidden px-4 py-2 rounded-xl text-slate-600 hover:bg-violeta-50 hover:text-violeta-800 transition">
+                        <i class="fa-solid fa-hammer mr-1.5"></i>Productos CRUD
+                    </button>
+                    <button onclick="switchView('gestion-usuarios')" id="nav-gestion-usuarios" class="nav-tab hidden px-4 py-2 rounded-xl text-slate-600 hover:bg-violeta-50 hover:text-violeta-800 transition">
+                        <i class="fa-solid fa-users-gear mr-1.5"></i>Usuarios CRUD
+                    </button>
+                    <button onclick="switchView('perfil')" id="nav-perfil" class="nav-tab hidden px-4 py-2 rounded-xl text-slate-600 hover:bg-violeta-50 hover:text-violeta-800 transition">
+                        <i class="fa-solid fa-fingerprint mr-1.5"></i>Perfil & Biometría
+                    </button>
+                </nav>
+
+                <!-- Right Actions: Cart & Auth -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Cart Button -->
+                    <button onclick="toggleCartDrawer(true)" class="relative p-2.5 rounded-xl bg-madera-100 hover:bg-madera-200 text-madera-800 transition border border-madera-200" aria-label="Carrito">
+                        <i class="fa-solid fa-bag-shopping text-lg"></i>
+                        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-violeta-700 text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                    </button>
+
+                    <!-- Guest Auth Button -->
+                    <div id="guest-actions" class="flex items-center gap-2">
+                        <button onclick="openAuthModal('login')" class="bg-violeta-700 hover:bg-violeta-800 text-white font-semibold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-user"></i> <span>Ingresar</span>
+                        </button>
+                    </div>
+
+                    <!-- Logged User Pill -->
+                    <div id="user-actions" class="hidden items-center gap-2">
+                        <button onclick="switchView('perfil')" class="flex items-center gap-2 bg-violeta-100 hover:bg-violeta-200 border border-violeta-200 px-3 py-1.5 rounded-xl transition">
+                            <div class="w-7 h-7 rounded-lg bg-violeta-700 text-white flex items-center justify-center text-xs font-bold" id="user-avatar-initial">U</div>
+                            <div class="hidden sm:block text-left">
+                                <p class="text-xs font-bold text-violeta-950 leading-none" id="header-user-name">Usuario</p>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-madera-600" id="header-user-role">Cliente</span>
+                            </div>
+                        </button>
+                        <button onclick="handleLogout()" title="Cerrar Sesión" class="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+
+                    <!-- Mobile Menu Toggle -->
+                    <button id="mobile-menu-btn" class="lg:hidden p-2.5 rounded-xl text-violeta-900 hover:bg-violeta-100">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-violeta-100 px-4 py-4 space-y-2 shadow-lg">
+            <button onclick="switchView('tienda'); closeMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl font-semibold text-violeta-950 hover:bg-violeta-50 flex items-center gap-2">
+                <i class="fa-solid fa-store w-5 text-violeta-700"></i> Tienda Artesanal
+            </button>
+            <button onclick="switchView('ordenes'); closeMobileMenu()" id="mob-nav-ordenes" class="hidden w-full text-left px-4 py-2.5 rounded-xl font-semibold text-violeta-950 hover:bg-violeta-50 flex items-center gap-2">
+                <i class="fa-solid fa-box-open w-5 text-violeta-700"></i> Historial de Órdenes
+            </button>
+            <button onclick="switchView('gestion-productos'); closeMobileMenu()" id="mob-nav-productos" class="hidden w-full text-left px-4 py-2.5 rounded-xl font-semibold text-violeta-950 hover:bg-violeta-50 flex items-center gap-2">
+                <i class="fa-solid fa-hammer w-5 text-madera-600"></i> Gestión de Productos (CRUD)
+            </button>
+            <button onclick="switchView('gestion-usuarios'); closeMobileMenu()" id="mob-nav-usuarios" class="hidden w-full text-left px-4 py-2.5 rounded-xl font-semibold text-violeta-950 hover:bg-violeta-50 flex items-center gap-2">
+                <i class="fa-solid fa-users-gear w-5 text-violeta-700"></i> Gestión de Usuarios (Admin)
+            </button>
+            <button onclick="switchView('perfil'); closeMobileMenu()" id="mob-nav-perfil" class="hidden w-full text-left px-4 py-2.5 rounded-xl font-semibold text-violeta-950 hover:bg-violeta-50 flex items-center gap-2">
+                <i class="fa-solid fa-fingerprint w-5 text-violeta-700"></i> Mi Perfil & Huella Dactilar
+            </button>
+        </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- VISTA 1: TIENDA Y CATÁLOGO PÚBLICO                                    -->
+    <!-- ===================================================================== -->
+    <main id="view-tienda" class="view-section">
+        <!-- Hero Banner -->
+        <section class="relative overflow-hidden pt-10 pb-16 lg:pt-16 lg:pb-24 bg-gradient-to-br from-violeta-100 via-violeta-50 to-madera-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                    <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violeta-200/70 border border-violeta-300 text-violeta-900 text-xs font-bold">
+                            <i class="fa-solid fa-wand-magic-sparkles text-violeta-700"></i>
+                            Tallado artesanal en maderas nobles sustentables
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-violeta-950 leading-tight">
+                            Arte y calidez en <span class="text-transparent bg-clip-text bg-gradient-to-r from-violeta-800 via-violeta-600 to-madera-500">madera viva</span> para tu hogar
+                        </h1>
+                        <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0">
+                            Descubre piezas únicas hechas a mano en <strong>Antonia Art</strong>. Compra en línea con envío geolocalizado y pago seguro con ePayco.
+                        </p>
+                        <div class="flex flex-wrap gap-3 justify-center lg:justify-start">
+                            <a href="#catalogo-section" class="bg-violeta-700 hover:bg-violeta-800 text-white font-bold px-7 py-3.5 rounded-2xl shadow-lg shadow-violeta-700/20 transition">
+                                Explorar Catálogo
+                            </a>
+                            <button onclick="openAuthModal('register')" id="hero-cta-auth" class="bg-white hover:bg-madera-100 text-madera-800 border border-madera-300 font-bold px-7 py-3.5 rounded-2xl shadow-sm transition">
+                                Crear Cuenta / Acceso Biométrico
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5">
+                        <div class="bg-white p-5 rounded-3xl shadow-xl border border-violeta-100">
+                            <div class="relative h-72 rounded-2xl overflow-hidden bg-violeta-100 mb-4">
+                                <img src="porta6.jpeg" alt="Artesanía en madera Antonia Art" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x500/7e22ce/ffffff?text=Antonia+Art'">
+                                <span class="absolute top-3 right-3 bg-violeta-900/90 text-white text-xs font-bold px-3 py-1 rounded-full">100% Hecho a Mano</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-serif font-bold text-lg text-violeta-950">Colección Otoño en Teca</h3>
+                                    <p class="text-xs text-madera-600 font-medium">Acabado natural con cera de abeja</p>
+                                </div>
+                                <span class="bg-violeta-100 text-violeta-800 font-bold px-3 py-1.5 rounded-xl text-xs">Envío Nacional</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Catálogo Sincronizado con Firestore -->
+        <section id="catalogo-section" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-violeta-700 bg-violeta-100 px-3 py-1 rounded-full">Tienda Oficial</span>
+                    <h2 class="text-3xl sm:text-4xl font-serif font-bold text-violeta-950 mt-3">Nuestras Creaciones</h2>
+                </div>
+
+                <!-- Filtros y Buscador -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="filterCatalog('todos')" class="cat-filter-btn active bg-violeta-700 text-white font-semibold px-4 py-2 rounded-xl text-xs sm:text-sm transition" data-cat="todos">Todos</button>
+                    <button onclick="filterCatalog('cocina')" class="cat-filter-btn bg-white text-slate-700 hover:bg-violeta-100 border border-violeta-200 font-semibold px-4 py-2 rounded-xl text-xs sm:text-sm transition" data-cat="cocina">Cocina</button>
+                    <button onclick="filterCatalog('decoracion')" class="cat-filter-btn bg-white text-slate-700 hover:bg-violeta-100 border border-violeta-200 font-semibold px-4 py-2 rounded-xl text-xs sm:text-sm transition" data-cat="decoracion">Decoración</button>
+                    <button onclick="filterCatalog('organizadores')" class="cat-filter-btn bg-white text-slate-700 hover:bg-violeta-100 border border-violeta-200 font-semibold px-4 py-2 rounded-xl text-xs sm:text-sm transition" data-cat="organizadores">Organizadores</button>
+                </div>
+            </div>
+
+            <!-- Grid de Productos en Tiempo Real -->
+            <div id="catalog-loading" class="text-center py-12">
+                <i class="fa-solid fa-spinner fa-spin text-3xl text-violeta-700 mb-2"></i>
+                <p class="text-sm text-slate-500">Cargando piezas artesanales desde Firestore...</p>
+            </div>
+            <div id="catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </section>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- VISTA 2: HISTORIAL Y GESTIÓN DE ÓRDENES                               -->
+    <!-- ===================================================================== -->
+    <section id="view-ordenes" class="view-section hidden py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-violeta-700 bg-violeta-100 px-3 py-1 rounded-full">Seguimiento en Tiempo Real</span>
+                <h2 class="text-3xl font-serif font-bold text-violeta-950 mt-2" id="orders-view-title">Mis Órdenes de Compra</h2>
+                <p class="text-sm text-slate-600">Consulta el estado de fabricación, envío geolocalizado y comprobante ePayco.</p>
+            </div>
+            <button onclick="switchView('tienda')" class="bg-violeta-700 hover:bg-violeta-800 text-white font-semibold px-5 py-2.5 rounded-xl text-sm self-start">
+                <i class="fa-solid fa-plus mr-1.5"></i>Seguir Comprando
+            </button>
+        </div>
+
+        <div id="orders-list" class="space-y-6">
+            <!-- Renderizado dinámico desde Firestore -->
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VISTA 3: CRUD DE PRODUCTOS (ADMIN Y ARTESANO) + STORAGE               -->
+    <!-- ===================================================================== -->
+    <section id="view-gestion-productos" class="view-section hidden py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+            <span class="text-xs font-bold uppercase tracking-widest text-madera-700 bg-madera-100 px-3 py-1 rounded-full">Taller & Inventario</span>
+            <h2 class="text-3xl font-serif font-bold text-violeta-950 mt-2">Gestión de Productos en Madera (CRUD)</h2>
+            <p class="text-sm text-slate-600">Crea, edita o elimina piezas. Sube fotografías directamente desde la cámara o galería a Firebase Storage.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Formulario Crear / Editar Producto -->
+            <div class="lg:col-span-5">
+                <form id="product-crud-form" class="bg-white p-6 rounded-3xl border border-violeta-100 shadow-md space-y-4">
+                    <div class="flex items-center justify-between border-b border-violeta-100 pb-3">
+                        <h3 class="font-serif font-bold text-xl text-violeta-950" id="prod-form-title">Nueva Pieza Artesanal</h3>
+                        <button type="button" onclick="resetProductForm()" id="btn-cancel-edit-prod" class="hidden text-xs font-bold text-rose-600 hover:underline">Cancelar edición</button>
+                    </div>
+                    <input type="hidden" id="prod-id">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre del Producto</label>
+                        <input type="text" id="prod-name" required placeholder="Ej. Tabla de Quesos en Roble" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Categoría</label>
+                            <select id="prod-category" class="w-full px-3 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm bg-white">
+                                <option value="cocina">Cocina & Gourmet</option>
+                                <option value="decoracion">Decoración & Cuadros</option>
+                                <option value="organizadores">Cajas & Organizadores</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Precio (COP)</label>
+                            <input type="number" id="prod-price" required min="1000" step="500" placeholder="85000" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tipo de Madera</label>
+                            <input type="text" id="prod-wood" required placeholder="Teca / Cedro / Pino" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Stock Disponible</label>
+                            <input type="number" id="prod-stock" required min="0" value="5" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Descripción Artesanal</label>
+                        <textarea id="prod-desc" rows="3" required placeholder="Detalles del acabado, dimensiones y curado..." class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm resize-none"></textarea>
+                    </div>
+
+                    <!-- Carga de Imagen: Cámara o Galería -> Firebase Storage -->
+                    <div class="bg-violeta-50/70 p-4 rounded-2xl border border-dashed border-violeta-300 space-y-3">
+                        <label class="block text-xs font-bold text-violeta-950 uppercase">Fotografía del Producto (Firebase Storage)</label>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <!-- Botón Cámara -->
+                            <label class="cursor-pointer bg-violeta-700 hover:bg-violeta-800 text-white text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+                                <i class="fa-solid fa-camera"></i> Tomar Foto
+                                <input type="file" id="prod-camera-input" accept="image/*" capture="environment" class="hidden" onchange="handleProductImageSelect(event)">
+                            </label>
+                            <!-- Botón Galería -->
+                            <label class="cursor-pointer bg-madera-500 hover:bg-madera-600 text-white text-xs font-bold py-2.5 px-3 rounded-xl flex items-center justify-center gap-2 transition shadow-sm">
+                                <i class="fa-solid fa-images"></i> Galería
+                                <input type="file" id="prod-gallery-input" accept="image/*" class="hidden" onchange="handleProductImageSelect(event)">
+                            </label>
+                        </div>
+
+                        <!-- Vista Previa -->
+                        <div id="prod-img-preview-box" class="hidden relative rounded-xl overflow-hidden h-40 bg-white border border-violeta-200">
+                            <img id="prod-img-preview" src="" alt="Vista previa" class="w-full h-full object-cover">
+                            <span id="prod-img-filename" class="absolute bottom-2 left-2 bg-black/70 text-white text-[10px] px-2 py-0.5 rounded-md">imagen.jpg</span>
+                        </div>
+
+                        <!-- Barra de Progreso Storage -->
+                        <div id="storage-progress-container" class="hidden space-y-1">
+                            <div class="flex justify-between text-[11px] font-bold text-violeta-800">
+                                <span>Subiendo a Firebase Storage...</span>
+                                <span id="storage-progress-text">0%</span>
+                            </div>
+                            <div class="w-full bg-violeta-200 rounded-full h-2">
+                                <div id="storage-progress-bar" class="bg-violeta-700 h-2 rounded-full transition-all duration-200" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-save-product" class="w-full bg-violeta-800 hover:bg-violeta-900 text-white font-bold py-3.5 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Guardar Producto en Firestore
+                    </button>
+                </form>
+            </div>
+
+            <!-- Listado de Productos Administrables -->
+            <div class="lg:col-span-7">
+                <div class="bg-white rounded-3xl border border-violeta-100 shadow-md overflow-hidden">
+                    <div class="p-6 border-b border-violeta-100 flex justify-between items-center">
+                        <h3 class="font-serif font-bold text-xl text-violeta-950">Inventario Registrado</h3>
+                        <span id="admin-prod-count" class="bg-violeta-100 text-violeta-800 text-xs font-bold px-3 py-1 rounded-full">0 piezas</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-violeta-50/80 text-xs font-bold uppercase text-violeta-900 border-b border-violeta-100">
+                                    <th class="p-4">Pieza</th>
+                                    <th class="p-4">Categoría</th>
+                                    <th class="p-4">Precio</th>
+                                    <th class="p-4">Stock</th>
+                                    <th class="p-4 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-products-tbody" class="divide-y divide-violeta-100 text-sm">
+                                <!-- Filas dinámicas -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VISTA 4: CRUD DE USUARIOS (EXCLUSIVO ROL ADMINISTRADOR)               -->
+    <!-- ===================================================================== -->
+    <section id="view-gestion-usuarios" class="view-section hidden py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+            <span class="text-xs font-bold uppercase tracking-widest text-violeta-700 bg-violeta-100 px-3 py-1 rounded-full">Control de Acceso (RBAC)</span>
+            <h2 class="text-3xl font-serif font-bold text-violeta-950 mt-2">Administración de Usuarios (CRUD)</h2>
+            <p class="text-sm text-slate-600">Gestiona clientes, artesanos y administradores registrados en Firestore.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Formulario Crear / Editar Usuario -->
+            <div class="lg:col-span-4">
+                <form id="user-crud-form" class="bg-white p-6 rounded-3xl border border-violeta-100 shadow-md space-y-4">
+                    <div class="flex items-center justify-between border-b border-violeta-100 pb-3">
+                        <h3 class="font-serif font-bold text-xl text-violeta-950" id="user-form-title">Registrar Usuario</h3>
+                        <button type="button" onclick="resetUserForm()" id="btn-cancel-edit-user" class="hidden text-xs font-bold text-rose-600 hover:underline">Cancelar</button>
+                    </div>
+                    <input type="hidden" id="crud-user-id">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo</label>
+                        <input type="text" id="crud-user-name" required placeholder="Ej. Camila Mendoza" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
+                        <input type="email" id="crud-user-email" required placeholder="camila@antoniaart.com" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono</label>
+                        <input type="tel" id="crud-user-phone" placeholder="+57 300 123 4567" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Rol del Sistema</label>
+                            <select id="crud-user-role" class="w-full px-3 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm bg-white">
+                                <option value="cliente">Cliente</option>
+                                <option value="artesano">Artesano</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Estado</label>
+                            <select id="crud-user-status" class="w-full px-3 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm bg-white">
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-violeta-700 hover:bg-violeta-800 text-white font-bold py-3 rounded-xl shadow-md transition">
+                        Guardar Usuario en Firestore
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tabla de Usuarios -->
+            <div class="lg:col-span-8">
+                <div class="bg-white rounded-3xl border border-violeta-100 shadow-md overflow-hidden">
+                    <div class="p-6 border-b border-violeta-100 flex justify-between items-center">
+                        <h3 class="font-serif font-bold text-xl text-violeta-950">Directorio de Usuarios</h3>
+                        <span id="admin-users-count" class="bg-violeta-100 text-violeta-800 text-xs font-bold px-3 py-1 rounded-full">0 usuarios</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-violeta-50/80 text-xs font-bold uppercase text-violeta-900 border-b border-violeta-100">
+                                    <th class="p-4">Usuario</th>
+                                    <th class="p-4">Rol</th>
+                                    <th class="p-4">Biometría</th>
+                                    <th class="p-4">Estado</th>
+                                    <th class="p-4 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-tbody" class="divide-y divide-violeta-100 text-sm">
+                                <!-- Renderizado dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="view-perfil" class="view-section hidden py-12 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+            <span class="text-xs font-bold uppercase tracking-widest text-violeta-700 bg-violeta-100 px-3 py-1 rounded-full">Seguridad & Cuenta</span>
+            <h2 class="text-3xl font-serif font-bold text-violeta-950 mt-2">Mi Perfil y Autenticación Biométrica</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Tarjeta de Datos y Dirección GPS -->
+            <div class="bg-white p-6 rounded-3xl border border-violeta-100 shadow-md space-y-5">
+                <div class="flex items-center gap-4 border-b border-violeta-100 pb-4">
+                    <div class="w-14 h-14 rounded-2xl bg-violeta-700 text-white flex items-center justify-center text-2xl font-serif font-bold" id="profile-big-initial">A</div>
+                    <div>
+                        <h3 class="font-bold text-lg text-violeta-950" id="profile-name">Nombre Usuario</h3>
+                        <p class="text-xs text-slate-500" id="profile-email">correo@ejemplo.com</p>
+                        <span class="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-madera-100 text-madera-800" id="profile-role-badge">Cliente</span>
+                    </div>
+                </div>
+
+                <form id="profile-update-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Teléfono de Contacto</label>
+                        <input type="tel" id="profile-phone" placeholder="+57 300 000 0000" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 text-sm">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">Dirección Predeterminada de Entrega</label>
+                            <button type="button" onclick="captureGeolocation('profile')" class="text-xs font-bold text-violeta-700 hover:text-violeta-900 flex items-center gap-1">
+                                <i class="fa-solid fa-location-crosshairs"></i> Usar mi ubicación GPS
+                            </button>
+                        </div>
+                        <input type="text" id="profile-address" placeholder="Calle, barrio, ciudad..." class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 text-sm">
+                        <p id="profile-gps-coords" class="text-[11px] text-emerald-700 font-medium mt-1 hidden"></p>
+                    </div>
+                    <button type="submit" class="w-full bg-violeta-700 hover:bg-violeta-800 text-white font-bold py-3 rounded-xl text-sm transition">
+                        Actualizar Datos del Perfil
+                    </button>
+                </form>
+            </div>
+
+            <!-- Tarjeta de Autenticación Biométrica (WebAuthn Huella Dactilar) -->
+            <div class="bg-gradient-to-br from-violeta-900 to-violeta-950 text-white p-6 rounded-3xl shadow-xl flex flex-col justify-between space-y-6">
+                <div class="space-y-4">
+                    <div class="w-14 h-14 rounded-2xl bg-violeta-700/60 border border-violeta-500 flex items-center justify-center text-3xl text-violeta-200">
+                        <i class="fa-solid fa-fingerprint"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-2xl">Acceso con Huella Dactilar</h3>
+                    <p class="text-sm text-violeta-200 leading-relaxed">
+                        Vincula el sensor biométrico de tu teléfono o computador (TouchID, Windows Hello, Huella Android) mediante el estándar <strong>WebAuthn</strong> para iniciar sesión sin escribir contraseña.
+                    </p>
+                    
+                    <div id="biometric-status-box" class="p-4 rounded-2xl bg-violeta-800/50 border border-violeta-700 text-xs space-y-1">
+                        <p class="font-bold text-violeta-100" id="biometric-status-title">Verificando compatibilidad del dispositivo...</p>
+                        <p class="text-violeta-300" id="biometric-status-desc">Comprobando sensor biométrico integrado.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button type="button" onclick="registerBiometricCredential()" id="btn-register-biometric" class="w-full bg-madera-500 hover:bg-madera-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-fingerprint text-lg"></i> Registrar Huella en este Dispositivo
+                    </button>
+                    <button type="button" onclick="removeBiometricCredential()" id="btn-remove-biometric" class="hidden w-full bg-rose-600/30 hover:bg-rose-600/50 border border-rose-400/40 text-rose-100 font-semibold py-2.5 rounded-xl text-xs transition">
+                        Desvincular Huella Dactilar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="auth-modal" class="fixed inset-0 z-[70] hidden bg-violeta-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-violeta-100 relative max-h-[92vh] overflow-y-auto">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-violeta-50 hover:bg-violeta-100 text-violeta-900 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-violeta-700 text-white flex items-center justify-center text-xl mb-3 shadow-md">
+                    <i class="fa-solid fa-tree"></i>
+                </div>
+                <h3 class="font-serif font-bold text-2xl text-violeta-950" id="auth-modal-title">Bienvenido a Antonia Art</h3>
+                <p class="text-xs text-slate-500 mt-1" id="auth-modal-subtitle">Accede a tu cuenta para gestionar pedidos y piezas</p>
+            </div>
+
+            <!-- Tabs Login / Registro -->
+            <div class="grid grid-cols-2 gap-2 p-1 bg-violeta-100 rounded-xl mb-6" id="auth-tabs">
+                <button type="button" onclick="switchAuthTab('login')" id="tab-btn-login" class="py-2 rounded-lg text-xs font-bold bg-white text-violeta-900 shadow-sm transition">Iniciar Sesión</button>
+                <button type="button" onclick="switchAuthTab('register')" id="tab-btn-register" class="py-2 rounded-lg text-xs font-bold text-violeta-700 transition">Crear Cuenta</button>
+            </div>
+
+            <!-- FORMULARIO LOGIN -->
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
+                    <input type="email" id="login-email" required placeholder="tu@correo.com" class="w-full px-4 py-3 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Contraseña</label>
+                        <button type="button" onclick="switchAuthTab('forgot')" class="text-xs font-semibold text-violeta-700 hover:underline">¿Olvidaste tu contraseña?</button>
+                    </div>
+                    <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                </div>
+
+                <button type="submit" class="w-full bg-violeta-700 hover:bg-violeta-800 text-white font-bold py-3.5 rounded-xl shadow-md transition">
+                    Iniciar Sesión
+                </button>
+
+                <!-- Botón Login Biométrico con Huella Dactilar -->
+                <div class="pt-2 border-t border-violeta-100">
+                    <button type="button" onclick="loginWithBiometrics()" class="w-full bg-madera-100 hover:bg-madera-200 border border-madera-300 text-madera-800 font-bold py-3 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-fingerprint text-lg text-violeta-700"></i> Ingresar con Huella Dactilar
+                    </button>
+                </div>
+            </form>
+
+            <!-- FORMULARIO REGISTRO -->
+            <form id="register-form" class="hidden space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre Completo</label>
+                    <input type="text" id="reg-name" required placeholder="Ej. Sofía Restrepo" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Electrónico</label>
+                    <input type="email" id="reg-email" required placeholder="sofia@correo.com" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña (mín. 6 caracteres)</label>
+                    <input type="password" id="reg-password" required minlength="6" placeholder="••••••••" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Rol de la Cuenta</label>
+                    <select id="reg-role" class="w-full px-4 py-2.5 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm bg-white font-medium text-violeta-950">
+                        <option value="cliente">Cliente (Comprar piezas artesanales)</option>
+                        <option value="artesano">Artesano (Publicar y gestionar productos)</option>
+                        <option value="admin">Administrador (Control total + CRUD usuarios)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-violeta-700 hover:bg-violeta-800 text-white font-bold py-3.5 rounded-xl shadow-md transition">
+                    Crear Cuenta en Antonia Art
+                </button>
+            </form>
+
+            <!-- FORMULARIO RECUPERAR CONTRASEÑA -->
+            <form id="forgot-form" class="hidden space-y-4">
+                <p class="text-xs text-slate-600 bg-violeta-50 p-3 rounded-xl border border-violeta-100">
+                    Ingresa tu correo electrónico registrado y te enviaremos un enlace oficial de Firebase para restablecer tu contraseña.
+                </p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Correo Registrado</label>
+                    <input type="email" id="forgot-email" required placeholder="tu@correo.com" class="w-full px-4 py-3 rounded-xl border border-violeta-200 focus:ring-2 focus:ring-violeta-600 outline-none text-sm">
+                </div>
+                <button type="submit" class="w-full bg-violeta-700 hover:bg-violeta-800 text-white font-bold py-3 rounded-xl shadow-md transition">
+                    Enviar Correo de Recuperación
+                </button>
+                <button type="button" onclick="switchAuthTab('login')" class="w-full text-xs font-bold text-violeta-700 hover:underline py-1">
+                    ← Volver al inicio de sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="cart-drawer" class="fixed inset-0 z-[80] hidden">
+        <div class="absolute inset-0 bg-violeta-950/50 backdrop-blur-xs" onclick="toggleCartDrawer(false)"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-full max-w-lg bg-white shadow-2xl flex flex-col justify-between overflow-hidden">
+            
+            <!-- Drawer Header -->
+            <div class="p-6 bg-violeta-900 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-bag-shopping text-xl text-violeta-300"></i>
+                    <div>
+                        <h3 class="font-serif font-bold text-xl">Tu Carrito Artesanal</h3>
+                        <p class="text-xs text-violeta-200" id="cart-items-subtitle">0 productos seleccionados</p>
+                    </div>
+                </div>
+                <button onclick="toggleCartDrawer(false)" class="w-9 h-9 rounded-full bg-violeta-800 hover:bg-violeta-700 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Drawer Body (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <!-- Lista de Ítems -->
+                <div id="cart-items-container" class="space-y-4"></div>
+
+                <!-- Sección de Checkout: Geolocalización y Resumen -->
+                <div id="checkout-section" class="hidden pt-6 border-t border-violeta-100 space-y-4">
+                    <h4 class="font-serif font-bold text-lg text-violeta-950 flex items-center gap-2">
+                        <i class="fa-solid fa-truck-fast text-madera-500"></i> Datos de Entrega Geolocalizada
+                    </h4>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombre quien recibe</label>
+                        <input type="text" id="checkout-name" placeholder="Nombre completo" class="w-full px-3.5 py-2.5 rounded-xl border border-violeta-200 text-sm">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">Dirección Exacta de Entrega</label>
+                            <button type="button" onclick="captureGeolocation('checkout')" id="btn-geo-checkout" class="text-xs font-bold bg-violeta-100 hover:bg-violeta-200 text-violeta-800 px-2.5 py-1 rounded-lg flex items-center gap-1 transition">
+                                <i class="fa-solid fa-location-dot"></i> Capturar GPS
+                            </button>
+                        </div>
+                        <input type="text" id="checkout-address" placeholder="Ej. Cra 15 # 85-20, Bogotá" class="w-full px-3.5 py-2.5 rounded-xl border border-violeta-200 text-sm">
+                        
+                        <!-- Info GPS Capturada -->
+                        <div id="checkout-geo-box" class="hidden mt-2 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 space-y-1">
+                            <div class="flex items-center justify-between font-bold">
+                                <span><i class="fa-solid fa-satellite-dish mr-1"></i> Coordenadas GPS asociadas:</span>
+                                <a id="checkout-map-link" href="#" target="_blank" class="underline text-emerald-700">Ver en Mapa ↗</a>
+                            </div>
+                            <p id="checkout-coords-text" class="font-mono text-[11px]"></p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Notas de Personalización (Opcional)</label>
+                        <input type="text" id="checkout-notes" placeholder="Grabado láser, dedicatoria..." class="w-full px-3.5 py-2.5 rounded-xl border border-violeta-200 text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Drawer Footer -->
+            <div id="cart-footer" class="p-6 bg-violeta-50 border-t border-violeta-100 space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-semibold text-slate-600">Total a Pagar (COP):</span>
+                    <span class="text-2xl font-serif font-bold text-violeta-950" id="cart-total-amount">$0</span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="initiateEpaycoCheckout()" id="btn-pay-epayco" class="w-full bg-gradient-to-r from-violeta-700 to-violeta-900 hover:from-violeta-800 hover:to-violeta-950 text-white font-bold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-shield-halved"></i> Pagar con ePayco Checkout
+                    </button>
+                    <button onclick="clearCart()" class="w-full text-xs font-semibold text-slate-500 hover:text-rose-600 py-1">
+                        Vaciar carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="epayco-confirm-modal" class="fixed inset-0 z-[90] hidden bg-violeta-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-violeta-200 space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center gap-2">
+                    <span class="bg-orange-500 text-white font-extrabold px-2.5 py-1 rounded-lg text-xs">ePayco</span>
+                    <span class="font-bold text-sm text-slate-700">Pasarela de Pagos Certificada</span>
+                </div>
+                <span class="text-[11px] bg-amber-100 text-amber-800 font-bold px-2.5 py-0.5 rounded-full">Modo Pruebas</span>
+            </div>
+
+            <div class="bg-violeta-50 p-4 rounded-2xl border border-violeta-100 space-y-2 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Referencia ePayco:</span>
+                    <span class="font-mono font-bold text-violeta-950" id="epayco-ref-display">EPAY-000000</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Comercio:</span>
+                    <span class="font-bold text-slate-800">Antonia Art S.A.S</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Total Transacción:</span>
+                    <span class="font-bold text-lg text-violeta-800" id="epayco-amount-display">$0 COP</span>
+                </div>
+            </div>
+
+            <p class="text-xs text-slate-600 leading-relaxed">
+                El SDK de ePayco ha sido inicializado. Selecciona el resultado de la validación bancaria para registrar la confirmación de la transacción en Firestore:
+            </p>
+
+            <div class="space-y-2.5">
+                <button onclick="finalizeOrderTransaction('Aceptada')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-check"></i> Confirmar Pago Aprobado
+                </button>
+                <button onclick="finalizeOrderTransaction('Pendiente')" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                    Simular Pago Pendiente (Efecty / Baloto)
+                </button>
+                <button onclick="closeEpaycoModal()" class="w-full text-xs font-semibold text-slate-500 hover:text-rose-600 py-1.5">
+                    Cancelar operación
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-violeta-950 text-violeta-200 py-10 mt-16 border-t border-violeta-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-tree text-violeta-400"></i>
+                <span class="font-serif font-bold text-xl text-white">AntoniaArt</span>
+            </div>
+            <p class="text-xs text-violeta-300 text-center">&copy; 2026 Antonia Art — E-Commerce Artesanal en Madera con Firebase, WebAuthn, GPS & ePayco.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            sendPasswordResetEmail,
+            signOut,
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc, 
+            addDoc, 
+            updateDoc, 
+            deleteDoc, 
+            onSnapshot, 
+            collection 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { 
+            getStorage, 
+            ref as storageRef, 
+            uploadBytesResumable, 
+            getDownloadURL 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+
+        // 1. Inicialización segura de Firebase usando variables de entorno
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'antonia-art-ecommerce';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : { apiKey: "demo-key", authDomain: "demo.firebaseapp.com", projectId: "demo-project", storageBucket: "demo.appspot.com" };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Rutas estrictas de Firestore según reglas de seguridad
+        const getPublicCol = (colName) => collection(db, 'artifacts', appId, 'public', 'data', colName);
+        const getPublicDoc = (colName, docId) => doc(db, 'artifacts', appId, 'public', 'data', colName, docId);
+        const getUserCartDoc = (uid) => doc(db, 'artifacts', appId, 'users', uid, 'cart', 'current');
+
+        // Estado global de la aplicación
+        let currentAuthUser = null;
+        let currentUserProfile = null; // { uid, name, email, role, phone, address, coords, biometricId }
+        let allProducts = [];
+        let allUsers = [];
+        let allOrders = [];
+        let cartItems = [];
+        let activeCategoryFilter = 'todos';
+        let selectedProductFile = null;
+        let checkoutGeoData = null; // { lat, lng, address }
+        let profileGeoData = null;
+        let pendingOrderPayload = null;
+
+        // Catálogo semilla inicial por si Firestore está vacío
+        const SEED_PRODUCTS = [
+            {
+                name: 'Tabla Gourmet Rustik en Teca',
+                category: 'cocina',
+                price: 125000,
+                wood: 'Madera de Teca',
+                stock: 8,
+                description: 'Tabla maciza curada con cera de abeja orgánica y aceite mineral. Ideal para quesos y cortes.',
+                imageUrl: 'aretes1.jpeg'
+            },
+            {
+                name: 'Mural Geométrico Calado',
+                category: 'decoracion',
+                price: 195000,
+                wood: 'Cedro & Pino',
+                stock: 4,
+                description: 'Cuadro decorativo en relieve con tintes ecológicos en tonos violeta suave y madera natural.',
+                imageUrl: 'porta6.jpeg'
+            },
+            {
+                name: 'Caja Alhajero Antonia Tallada',
+                category: 'organizadores',
+                price: 98000,
+                wood: 'Pino Canadiense',
+                stock: 12,
+                description: 'Cofre artesanal con tapa grabada a mano e interior suave para joyas y recuerdos.',
+                imageUrl: 'aretes1.jpeg'
+            },
+            {
+                name: 'Set x6 Posavasos Botánicos',
+                category: 'cocina',
+                price: 58000,
+                wood: 'Cedro Rojo',
+                stock: 15,
+                description: 'Juego de 6 posavasos grabados con hojas botánicas y soporte organizador en madera.',
+                imageUrl: 'porta2.jpeg'
+            }
+        ];
+
+        // =====================================================================
+        // UTILIDADES UI (TOASTS, FORMATO MONEDA, VISTAS)
+        // =====================================================================
+        window.showToast = (message, type = 'info') => {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const styles = {
+                success: 'bg-emerald-700 text-white border-emerald-500',
+                error: 'bg-rose-700 text-white border-rose-500',
+                warning: 'bg-amber-600 text-white border-amber-400',
+                info: 'bg-violeta-900 text-white border-violeta-600'
+            };
+            const icons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-exclamation',
+                warning: 'fa-triangle-exclamation',
+                info: 'fa-sparkles'
+            };
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3.5 rounded-2xl shadow-xl border text-xs sm:text-sm font-medium transition-all duration-300 ${styles[type] || styles.info}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base shrink-0"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 4200);
+        };
+
+        const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val || 0);
+
+        window.switchView = (viewName) => {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-violeta-100', 'text-violeta-900');
+                btn.classList.add('text-slate-600');
+            });
+            const activeBtn = document.getElementById(`nav-${viewName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-violeta-100', 'text-violeta-900');
+                activeBtn.classList.remove('text-slate-600');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+        window.closeMobileMenu = () => document.getElementById('mobile-menu').classList.add('hidden');
+
+        // =====================================================================
+        // 1. AUTENTICACIÓN COMPLETA (3 ROLES) + PERFIL EN FIRESTORE
+        // =====================================================================
+        window.openAuthModal = (tab = 'login') => {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            switchAuthTab(tab);
+        };
+        window.closeAuthModal = () => document.getElementById('auth-modal').classList.add('hidden');
+
+        window.switchAuthTab = (tab) => {
+            ['login-form', 'register-form', 'forgot-form'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            const tabsBar = document.getElementById('auth-tabs');
+            
+            if (tab === 'forgot') {
+                tabsBar.classList.add('hidden');
+                document.getElementById('forgot-form').classList.remove('hidden');
+                document.getElementById('auth-modal-title').innerText = 'Recuperar Contraseña';
+                document.getElementById('auth-modal-subtitle').innerText = 'Te enviaremos un enlace seguro a tu correo';
+                return;
+            }
+
+            tabsBar.classList.remove('hidden');
+            const btnLogin = document.getElementById('tab-btn-login');
+            const btnReg = document.getElementById('tab-btn-register');
+
+            if (tab === 'login') {
+                document.getElementById('login-form').classList.remove('hidden');
+                btnLogin.className = 'py-2 rounded-lg text-xs font-bold bg-white text-violeta-900 shadow-sm transition';
+                btnReg.className = 'py-2 rounded-lg text-xs font-bold text-violeta-700 transition';
+                document.getElementById('auth-modal-title').innerText = 'Bienvenido a Antonia Art';
+                document.getElementById('auth-modal-subtitle').innerText = 'Ingresa con tu cuenta o huella dactilar';
+            } else {
+                document.getElementById('register-form').classList.remove('hidden');
+                btnReg.className = 'py-2 rounded-lg text-xs font-bold bg-white text-violeta-900 shadow-sm transition';
+                btnLogin.className = 'py-2 rounded-lg text-xs font-bold text-violeta-700 transition';
+                document.getElementById('auth-modal-title').innerText = 'Únete a Antonia Art';
+                document.getElementById('auth-modal-subtitle').innerText = 'Crea tu perfil de Cliente, Artesano o Administrador';
+            }
+        };
+
+        // Registro de nuevo usuario con rol
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const role = document.getElementById('reg-role').value;
+
+            try {
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                const userProfile = {
+                    uid: cred.user.uid,
+                    name,
+                    email,
+                    role,
+                    status: 'activo',
+                    phone: '',
+                    address: '',
+                    createdAt: new Date().toISOString()
+                };
+                await setDoc(getPublicDoc('users', cred.user.uid), userProfile);
+                currentUserProfile = userProfile;
+                updateUIForRole();
+                closeAuthModal();
+                showToast(`¡Cuenta creada con éxito! Rol asignado: ${role.toUpperCase()}`, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast(`Error al registrar: ${err.message}`, 'error');
+            }
+        });
+
+        // Inicio de sesión Email/Password
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const cred = await signInWithEmailAndPassword(auth, email, password);
+                await loadUserProfile(cred.user);
+                closeAuthModal();
+                showToast(`¡Bienvenido de nuevo, ${currentUserProfile?.name || email}!`, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Credenciales incorrectas o usuario no encontrado.', 'error');
+            }
+        });
+
+        // Recuperación de contraseña real con Firebase Auth
+        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value.trim();
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast('Correo de recuperación enviado. Revisa tu bandeja de entrada o spam.', 'success');
+                switchAuthTab('login');
+            } catch (err) {
+                console.error(err);
+                showToast(`No se pudo enviar el correo: ${err.message}`, 'error');
+            }
+        });
+
+        // Cerrar Sesión
+        window.handleLogout = async () => {
+            try {
+                await signOut(auth);
+                await signInAnonymously(auth);
+                currentUserProfile = null;
+                updateUIForRole();
+                switchView('tienda');
+                showToast('Sesión cerrada correctamente.', 'info');
+            } catch (err) {
+                showToast('Error al cerrar sesión.', 'error');
+            }
+        };
+
+        async function loadUserProfile(firebaseUser) {
+            if (!firebaseUser || firebaseUser.isAnonymous) {
+                currentUserProfile = null;
+                updateUIForRole();
+                return;
+            }
+            const snap = await getDoc(getPublicDoc('users', firebaseUser.uid));
+            if (snap.exists()) {
+                currentUserProfile = { id: snap.id, ...snap.data() };
+            } else {
+                // Perfil por defecto si se creó externamente
+                currentUserProfile = {
+                    uid: firebaseUser.uid,
+                    name: firebaseUser.email.split('@')[0],
+                    email: firebaseUser.email,
+                    role: 'cliente',
+                    status: 'activo'
+                };
+                await setDoc(getPublicDoc('users', firebaseUser.uid), currentUserProfile);
+            }
+            updateUIForRole();
+            await loadCartFromFirestore(firebaseUser.uid);
+        }
+
+        function updateUIForRole() {
+            const isLogged = currentUserProfile && !currentAuthUser?.isAnonymous;
+            const role = currentUserProfile?.role || 'guest';
+
+            document.getElementById('guest-actions').classList.toggle('hidden', isLogged);
+            document.getElementById('user-actions').classList.toggle('hidden', !isLogged);
+            document.getElementById('user-actions').classList.toggle('flex', isLogged);
+            document.getElementById('hero-cta-auth').classList.toggle('hidden', isLogged);
+
+            if (isLogged) {
+                document.getElementById('header-user-name').innerText = currentUserProfile.name;
+                document.getElementById('header-user-role').innerText = role;
+                document.getElementById('user-avatar-initial').innerText = currentUserProfile.name.charAt(0).toUpperCase();
+
+                // Rellenar vista Perfil
+                document.getElementById('profile-big-initial').innerText = currentUserProfile.name.charAt(0).toUpperCase();
+                document.getElementById('profile-name').innerText = currentUserProfile.name;
+                document.getElementById('profile-email').innerText = currentUserProfile.email;
+                document.getElementById('profile-role-badge').innerText = `Rol: ${role}`;
+                document.getElementById('profile-phone').value = currentUserProfile.phone || '';
+                document.getElementById('profile-address').value = currentUserProfile.address || '';
+                document.getElementById('checkout-name').value = currentUserProfile.name || '';
+                if (currentUserProfile.address) {
+                    document.getElementById('checkout-address').value = currentUserProfile.address;
+                }
+                checkBiometricSupportAndStatus();
+            }
+
+            // Control de Acceso Basado en Roles (RBAC) en Navegación
+            const showOrdenes = isLogged;
+            const showProductos = isLogged && (role === 'admin' || role === 'artesano');
+            const showUsuarios = isLogged && role === 'admin';
+            const showPerfil = isLogged;
+
+            document.getElementById('nav-ordenes').classList.toggle('hidden', !showOrdenes);
+            document.getElementById('mob-nav-ordenes').classList.toggle('hidden', !showOrdenes);
+
+            document.getElementById('nav-gestion-productos').classList.toggle('hidden', !showProductos);
+            document.getElementById('mob-nav-productos').classList.toggle('hidden', !showProductos);
+
+            document.getElementById('nav-gestion-usuarios').classList.toggle('hidden', !showUsuarios);
+            document.getElementById('mob-nav-usuarios').classList.toggle('hidden', !showUsuarios);
+
+            document.getElementById('nav-perfil').classList.toggle('hidden', !showPerfil);
+            document.getElementById('mob-nav-perfil').classList.toggle('hidden', !showPerfil);
+
+            renderOrdersList();
+        }
+
+        // =====================================================================
+        // 2. AUTENTICACIÓN BIOMÉTRICA (WEBAUTHN / HUELLA DACTILAR EN DISPOSITIVO)
+        // =====================================================================
+        const bufferToBase64url = (buffer) => {
+            const bytes = new Uint8Array(buffer);
+            let str = '';
+            for (const charCode of bytes) str += String.fromCharCode(charCode);
+            return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        };
+
+        const base64urlToBuffer = (base64url) => {
+            const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+            const padLen = (4 - (base64.length % 4)) % 4;
+            const padded = base64.padEnd(base64.length + padLen, '=');
+            const binary = atob(padded);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return bytes.buffer;
+        };
+
+        async function checkBiometricSupportAndStatus() {
+            const titleEl = document.getElementById('biometric-status-title');
+            const descEl = document.getElementById('biometric-status-desc');
+            const btnRemove = document.getElementById('btn-remove-biometric');
+
+            if (!window.PublicKeyCredential) {
+                titleEl.innerText = 'Dispositivo sin soporte WebAuthn';
+                descEl.innerText = 'Este navegador no soporta autenticación biométrica nativa.';
+                return;
+            }
+
+            const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+            if (currentUserProfile?.biometricCredentialId) {
+                titleEl.innerText = '✅ Huella Dactilar Activa y Vinculada';
+                descEl.innerText = `ID de Credencial: ${currentUserProfile.biometricCredentialId.slice(0, 18)}...`;
+                btnRemove.classList.remove('hidden');
+            } else if (available) {
+                titleEl.innerText = 'Sensor Biométrico Detectado (Listo para vincular)';
+                descEl.innerText = 'Tu dispositivo soporta huella dactilar o reconocimiento biométrico local.';
+                btnRemove.classList.add('hidden');
+            } else {
+                titleEl.innerText = 'Autenticador de plataforma no detectado';
+                descEl.innerText = 'Usa un teléfono con sensor de huella o PC con Windows Hello / TouchID.';
+            }
+        }
+
+        window.registerBiometricCredential = async () => {
+            if (!currentUserProfile) return showToast('Debes iniciar sesión primero.', 'warning');
+            if (!window.PublicKeyCredential) return showToast('WebAuthn no soportado en este navegador.', 'error');
+
+            try {
+                const challenge = crypto.getRandomValues(new Uint8Array(32));
+                const userIdBuffer = new TextEncoder().encode(currentUserProfile.uid);
+
+                const credential = await navigator.credentials.create({
+                    publicKey: {
+                        challenge,
+                        rp: {
+                            name: "Antonia Art E-Commerce",
+                            id: window.location.hostname || "localhost"
+                        },
+                        user: {
+                            id: userIdBuffer,
+                            name: currentUserProfile.email,
+                            displayName: currentUserProfile.name
+                        },
+                        pubKeyCredParams: [
+                            { type: "public-key", alg: -7 },   // ES256
+                            { type: "public-key", alg: -257 }  // RS256
+                        ],
+                        authenticatorSelection: {
+                            authenticatorAttachment: "platform",
+                            userVerification: "required",
+                            residentKey: "preferred"
+                        },
+                        timeout: 60000
+                    }
+                });
+
+                const credentialId = bufferToBase64url(credential.rawId);
+                await updateDoc(getPublicDoc('users', currentUserProfile.uid), {
+                    biometricCredentialId: credentialId,
+                    biometricUpdatedAt: new Date().toISOString()
+                });
+
+                currentUserProfile.biometricCredentialId = credentialId;
+                // Guardar referencia rápida local para permitir login biométrico directo en este dispositivo
+                const localBioMap = JSON.parse(localStorage.getItem('antonia_biometric_users') || '{}');
+                localBioMap[currentUserProfile.email] = {
+                    uid: currentUserProfile.uid,
+                    credentialId,
+                    name: currentUserProfile.name,
+                    email: currentUserProfile.email,
+                    role: currentUserProfile.role
+                };
+                localStorage.setItem('antonia_biometric_users', JSON.stringify(localBioMap));
+
+                checkBiometricSupportAndStatus();
+                showToast('¡Huella dactilar registrada exitosamente en este dispositivo!', 'success');
+            } catch (err) {
+                console.error('WebAuthn Create Error:', err);
+                showToast(`No se pudo registrar la huella: ${err.message}`, 'error');
+            }
+        };
+
+        window.removeBiometricCredential = async () => {
+            if (!currentUserProfile) return;
+            try {
+                await updateDoc(getPublicDoc('users', currentUserProfile.uid), {
+                    biometricCredentialId: null
+                });
+                delete currentUserProfile.biometricCredentialId;
+                const localBioMap = JSON.parse(localStorage.getItem('antonia_biometric_users') || '{}');
+                delete localBioMap[currentUserProfile.email];
+                localStorage.setItem('antonia_biometric_users', JSON.stringify(localBioMap));
+                checkBiometricSupportAndStatus();
+                showToast('Huella dactilar desvinculada de tu cuenta.', 'info');
+            } catch (err) {
+                showToast('Error al desvincular huella.', 'error');
+            }
+        };
+
+        window.loginWithBiometrics = async () => {
+            if (!window.PublicKeyCredential) return showToast('Navegador no compatible con biometría.', 'error');
+
+            const localBioMap = JSON.parse(localStorage.getItem('antonia_biometric_users') || '{}');
+            const emailInput = document.getElementById('login-email').value.trim();
+            const registeredEntries = Object.values(localBioMap);
+
+            if (registeredEntries.length === 0) {
+                return showToast('No hay ninguna huella registrada en este dispositivo. Ingresa con correo y vincúlala en tu Perfil.', 'warning');
+            }
+
+            const targetUser = emailInput && localBioMap[emailInput] ? localBioMap[emailInput] : registeredEntries[0];
+
+            try {
+                const challenge = crypto.getRandomValues(new Uint8Array(32));
+                const assertion = await navigator.credentials.get({
+                    publicKey: {
+                        challenge,
+                        allowCredentials: [{
+                            type: "public-key",
+                            id: base64urlToBuffer(targetUser.credentialId),
+                            transports: ["internal"]
+                        }],
+                        userVerification: "required",
+                        timeout: 60000
+                    }
+                });
+
+                if (assertion) {
+                    // Verificar perfil actualizado en Firestore
+                    const snap = await getDoc(getPublicDoc('users', targetUser.uid));
+                    if (snap.exists()) {
+                        currentUserProfile = { id: snap.id, ...snap.data() };
+                    } else {
+                        currentUserProfile = targetUser;
+                    }
+                    updateUIForRole();
+                    closeAuthModal();
+                    showToast(`¡Autenticación biométrica exitosa! Bienvenido, ${currentUserProfile.name}`, 'success');
+                }
+            } catch (err) {
+                console.error('WebAuthn Get Error:', err);
+                showToast(`Verificación biométrica cancelada o fallida: ${err.message}`, 'error');
+            }
+        };
+
+        // Actualizar perfil + GPS
+        document.getElementById('profile-update-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUserProfile) return;
+            const phone = document.getElementById('profile-phone').value.trim();
+            const address = document.getElementById('profile-address').value.trim();
+
+            try {
+                const updateData = { phone, address };
+                if (profileGeoData) updateData.coords = profileGeoData;
+                await updateDoc(getPublicDoc('users', currentUserProfile.uid), updateData);
+                currentUserProfile = { ...currentUserProfile, ...updateData };
+                showToast('Perfil actualizado en Firestore.', 'success');
+            } catch (err) {
+                showToast('Error al guardar perfil.', 'error');
+            }
+        });
+
+        // =====================================================================
+        // 3. CRUD DE USUARIOS (EXCLUSIVO ROL ADMINISTRADOR)
+        // =====================================================================
+        document.getElementById('user-crud-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (currentUserProfile?.role !== 'admin') {
+                return showToast('Acceso denegado: Solo administradores.', 'error');
+            }
+
+            const existingId = document.getElementById('crud-user-id').value;
+            const payload = {
+                name: document.getElementById('crud-user-name').value.trim(),
+                email: document.getElementById('crud-user-email').value.trim(),
+                phone: document.getElementById('crud-user-phone').value.trim(),
+                role: document.getElementById('crud-user-role').value,
+                status: document.getElementById('crud-user-status').value,
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                if (existingId) {
+                    await updateDoc(getPublicDoc('users', existingId), payload);
+                    showToast('Usuario actualizado en Firestore.', 'success');
+                } else {
+                    const newId = 'usr_' + Date.now();
+                    await setDoc(getPublicDoc('users', newId), {
+                        uid: newId,
+                        ...payload,
+                        createdAt: new Date().toISOString()
+                    });
+                    showToast('Nuevo usuario creado en Firestore.', 'success');
+                }
+                resetUserForm();
+            } catch (err) {
+                console.error(err);
+                showToast('Error al guardar usuario.', 'error');
+            }
+        });
+
+        window.editAdminUser = (uid) => {
+            const user = allUsers.find(u => u.id === uid || u.uid === uid);
+            if (!user) return;
+            document.getElementById('crud-user-id').value = user.id;
+            document.getElementById('crud-user-name').value = user.name || '';
+            document.getElementById('crud-user-email').value = user.email || '';
+            document.getElementById('crud-user-phone').value = user.phone || '';
+            document.getElementById('crud-user-role').value = user.role || 'cliente';
+            document.getElementById('crud-user-status').value = user.status || 'activo';
+            document.getElementById('user-form-title').innerText = 'Editar Usuario';
+            document.getElementById('btn-cancel-edit-user').classList.remove('hidden');
+        };
+
+        window.resetUserForm = () => {
+            document.getElementById('user-crud-form').reset();
+            document.getElementById('crud-user-id').value = '';
+            document.getElementById('user-form-title').innerText = 'Registrar Usuario';
+            document.getElementById('btn-cancel-edit-user').classList.add('hidden');
+        };
+
+        window.deleteAdminUser = async (uid) => {
+            if (currentUserProfile?.role !== 'admin') return;
+            if (uid === currentUserProfile.uid) return showToast('No puedes eliminar tu propio usuario activo.', 'warning');
+            try {
+                await deleteDoc(getPublicDoc('users', uid));
+                showToast('Usuario eliminado de Firestore.', 'info');
+            } catch (err) {
+                showToast('Error al eliminar usuario.', 'error');
+            }
+        };
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('admin-users-tbody');
+            document.getElementById('admin-users-count').innerText = `${allUsers.length} usuarios`;
+            tbody.innerHTML = allUsers.map(u => {
+                const roleBadge = {
+                    admin: 'bg-violeta-800 text-white',
+                    artesano: 'bg-madera-500 text-white',
+                    cliente: 'bg-violeta-100 text-violeta-900'
+                }[u.role] || 'bg-slate-100 text-slate-700';
+
+                return `
+                    <tr class="hover:bg-violeta-50/40 transition">
+                        <td class="p-4">
+                            <p class="font-bold text-violeta-950">${u.name}</p>
+                            <p class="text-xs text-slate-500">${u.email}</p>
+                        </td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-bold uppercase ${roleBadge}">${u.role}</span>
+                        </td>
+                        <td class="p-4 text-xs">
+                            ${u.biometricCredentialId 
+                                ? '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-fingerprint mr-1"></i>Activa</span>' 
+                                : '<span class="text-slate-400">Sin vincular</span>'}
+                        </td>
+                        <td class="p-4">
+                            <span class="px-2 py-0.5 rounded-md text-xs font-semibold ${u.status === 'inactivo' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
+                                ${u.status || 'activo'}
+                            </span>
+                        </td>
+                        <td class="p-4 text-right space-x-1">
+                            <button onclick="editAdminUser('${u.id}')" class="p-2 rounded-lg bg-violeta-100 hover:bg-violeta-200 text-violeta-800" title="Editar">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="deleteAdminUser('${u.id}')" class="p-2 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700" title="Eliminar">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // =====================================================================
+        // 4. CRUD DE PRODUCTOS + CÁMARA/GALERÍA -> FIREBASE STORAGE
+        // =====================================================================
+        window.handleProductImageSelect = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            selectedProductFile = file;
+
+            const previewBox = document.getElementById('prod-img-preview-box');
+            const previewImg = document.getElementById('prod-img-preview');
+            const filenameEl = document.getElementById('prod-img-filename');
+
+            previewImg.src = URL.createObjectURL(file);
+            filenameEl.innerText = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+            previewBox.classList.remove('hidden');
+        };
+
+        async function uploadImageToFirebaseStorage(file) {
+            return new Promise((resolve, reject) => {
+                const progressContainer = document.getElementById('storage-progress-container');
+                const progressBar = document.getElementById('storage-progress-bar');
+                const progressText = document.getElementById('storage-progress-text');
+
+                progressContainer.classList.remove('hidden');
+                const path = `artifacts/${appId}/products/${Date.now()}_${file.name}`;
+                const fileRef = storageRef(storage, path);
+                const uploadTask = uploadBytesResumable(fileRef, file);
+
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                        progressBar.style.width = `${pct}%`;
+                        progressText.innerText = `${pct}%`;
+                    },
+                    (error) => {
+                        progressContainer.classList.add('hidden');
+                        reject(error);
+                    },
+                    async () => {
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        progressContainer.classList.add('hidden');
+                        resolve(downloadURL);
+                    }
+                );
+            });
+        }
+
+        document.getElementById('product-crud-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const role = currentUserProfile?.role;
+            if (role !== 'admin' && role !== 'artesano') {
+                return showToast('Solo administradores o artesanos pueden gestionar productos.', 'error');
+            }
+
+            const btn = document.getElementById('btn-save-product');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+            try {
+                const existingId = document.getElementById('prod-id').value;
+                let imageUrl = existingId 
+                    ? (allProducts.find(p => p.id === existingId)?.imageUrl || '') 
+                    : 'porta5.jpeg'; // Imagen por defecto si no hay foto seleccionada
+
+                // Si seleccionó foto desde cámara o galería, subir a Firebase Storage
+                if (selectedProductFile) {
+                    try {
+                        imageUrl = await uploadImageToFirebaseStorage(selectedProductFile);
+                    } catch (storageErr) {
+                        console.warn('Storage fallback por reglas de entorno:', storageErr);
+                        // Conversión local de respaldo si Storage no tiene bucket configurado en sandbox
+                        imageUrl = await new Promise((res) => {
+                            const reader = new FileReader();
+                            reader.onload = () => res(reader.result);
+                            reader.readAsDataURL(selectedProductFile);
+                        });
+                    }
+                }
+
+                const productData = {
+                    name: document.getElementById('prod-name').value.trim(),
+                    category: document.getElementById('prod-category').value,
+                    price: Number(document.getElementById('prod-price').value),
+                    wood: document.getElementById('prod-wood').value.trim(),
+                    stock: Number(document.getElementById('prod-stock').value),
+                    description: document.getElementById('prod-desc').value.trim(),
+                    imageUrl,
+                    updatedBy: currentUserProfile.name,
+                    updatedAt: new Date().toISOString()
+                };
+
+                if (existingId) {
+                    await updateDoc(getPublicDoc('products', existingId), productData);
+                    showToast('Pieza actualizada en Firestore.', 'success');
+                } else {
+                    await addDoc(getPublicCol('products'), {
+                        ...productData,
+                        createdAt: new Date().toISOString()
+                    });
+                    showToast('¡Nueva pieza publicada en el catálogo!', 'success');
+                }
+                resetProductForm();
+            } catch (err) {
+                console.error(err);
+                showToast(`Error al guardar producto: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Guardar Producto en Firestore';
+            }
+        });
+
+        window.editAdminProduct = (id) => {
+            const p = allProducts.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-category').value = p.category;
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-wood').value = p.wood || 'Madera Noble';
+            document.getElementById('prod-stock').value = p.stock ?? 5;
+            document.getElementById('prod-desc').value = p.description || '';
+            document.getElementById('prod-form-title').innerText = 'Editar Pieza Artesanal';
+            document.getElementById('btn-cancel-edit-prod').classList.remove('hidden');
+
+            if (p.imageUrl) {
+                document.getElementById('prod-img-preview').src = p.imageUrl;
+                document.getElementById('prod-img-filename').innerText = 'Imagen actual cargada';
+                document.getElementById('prod-img-preview-box').classList.remove('hidden');
+            }
+        };
+
+        window.resetProductForm = () => {
+            document.getElementById('product-crud-form').reset();
+            document.getElementById('prod-id').value = '';
+            selectedProductFile = null;
+            document.getElementById('prod-img-preview-box').classList.add('hidden');
+            document.getElementById('prod-form-title').innerText = 'Nueva Pieza Artesanal';
+            document.getElementById('btn-cancel-edit-prod').classList.add('hidden');
+        };
+
+        window.deleteAdminProduct = async (id) => {
+            const role = currentUserProfile?.role;
+            if (role !== 'admin' && role !== 'artesano') return;
+            try {
+                await deleteDoc(getPublicDoc('products', id));
+                showToast('Producto eliminado del catálogo.', 'info');
+            } catch (err) {
+                showToast('Error al eliminar producto.', 'error');
+            }
+        };
+
+        window.filterCatalog = (cat) => {
+            activeCategoryFilter = cat;
+            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+                const isMatch = btn.getAttribute('data-cat') === cat;
+                btn.className = isMatch
+                    ? 'cat-filter-btn active bg-violeta-700 text-white font-semibold px-4 py-2 rounded-xl text-xs sm:text-sm transition'
+                    : 'cat-filter-btn bg-white text-slate-700 hover:bg-violeta-100 border border-violeta-200 font-semibold px-4 py-2 rounded-xl text-xs sm:text-sm transition';
+            });
+            renderCatalogGrid();
+        };
+
+        function renderCatalogGrid() {
+            const grid = document.getElementById('catalog-grid');
+            const filtered = activeCategoryFilter === 'todos' 
+                ? allProducts 
+                : allProducts.filter(p => p.category === activeCategoryFilter);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 bg-white rounded-3xl border border-violeta-100 text-slate-500">No hay productos disponibles en esta categoría.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-3xl overflow-hidden border border-violeta-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                    <div>
+                        <div class="relative h-64 overflow-hidden bg-violeta-100">
+                            <img src="${p.imageUrl}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x450/e9d5ff/6b21a8?text=Antonia+Art'">
+                            <span class="absolute top-3 left-3 bg-violeta-900/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">${p.category}</span>
+                            <span class="absolute bottom-3 right-3 bg-madera-100/95 text-madera-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-madera-200">${p.wood || 'Madera Noble'}</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start gap-2 mb-2">
+                                <h3 class="font-serif font-bold text-xl text-violeta-950">${p.name}</h3>
+                            </div>
+                            <p class="text-slate-600 text-sm line-clamp-2 mb-3">${p.description}</p>
+                            <p class="text-xs font-semibold ${p.stock > 0 ? 'text-emerald-700' : 'text-rose-600'}">
+                                ${p.stock > 0 ? `Disponible: ${p.stock} unidades` : 'Agotado temporalmente'}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="px-6 pb-6 pt-3 border-t border-violeta-50 flex items-center justify-between">
+                        <span class="text-xl font-bold text-violeta-900">${formatCOP(p.price)}</span>
+                        <button onclick="addToCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''} class="bg-violeta-700 hover:bg-violeta-800 disabled:bg-slate-300 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminProductsTable() {
+            const tbody = document.getElementById('admin-products-tbody');
+            document.getElementById('admin-prod-count').innerText = `${allProducts.length} piezas`;
+            tbody.innerHTML = allProducts.map(p => `
+                <tr class="hover:bg-violeta-50/40">
+                    <td class="p-4 flex items-center gap-3">
+                        <img src="${p.imageUrl}" class="w-12 h-12 rounded-xl object-cover bg-violeta-100 shrink-0" onerror="this.src='https://placehold.co/100x100/e9d5ff/6b21a8?text=Art'">
+                        <div>
+                            <p class="font-bold text-violeta-950">${p.name}</p>
+                            <p class="text-xs text-madera-600">${p.wood || ''}</p>
+                        </div>
+                    </td>
+                    <td class="p-4 capitalize text-xs font-semibold">${p.category}</td>
+                    <td class="p-4 font-bold text-violeta-900">${formatCOP(p.price)}</td>
+                    <td class="p-4 text-xs font-bold">${p.stock}</td>
+                    <td class="p-4 text-right space-x-1">
+                        <button onclick="editAdminProduct('${p.id}')" class="p-2 rounded-lg bg-violeta-100 hover:bg-violeta-200 text-violeta-800"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteAdminProduct('${p.id}')" class="p-2 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // =====================================================================
+        // 5. CRUD DE CARRITO (PERSISTENTE EN FIRESTORE) & ÓRDENES
+        // =====================================================================
+        window.toggleCartDrawer = (open) => {
+            document.getElementById('cart-drawer').classList.toggle('hidden', !open);
+        };
+
+        async function syncCartToFirestore() {
+            if (currentAuthUser && !currentAuthUser.isAnonymous) {
+                try {
+                    await setDoc(getUserCartDoc(currentAuthUser.uid), {
+                        items: cartItems,
+                        updatedAt: new Date().toISOString()
+                    });
+                } catch (err) {
+                    console.error('Error syncing cart:', err);
+                }
+            }
+        }
+
+        async function loadCartFromFirestore(uid) {
+            try {
+                const snap = await getDoc(getUserCartDoc(uid));
+                if (snap.exists() && Array.isArray(snap.data().items)) {
+                    cartItems = snap.data().items;
+                    renderCart();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        window.addToCart = async (productId) => {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = cartItems.find(item => item.productId === productId);
+            if (existing) {
+                if (existing.quantity >= product.stock) {
+                    return showToast('Has alcanzado el stock máximo disponible.', 'warning');
+                }
+                existing.quantity += 1;
+            } else {
+                cartItems.push({
+                    productId: product.id,
+                    name: product.name,
+                    price: product.price,
+                    imageUrl: product.imageUrl,
+                    quantity: 1
+                });
+            }
+            renderCart();
+            await syncCartToFirestore();
+            showToast(`"${product.name}" añadido al carrito.`, 'success');
+        };
+
+        window.updateCartQuantity = async (productId, delta) => {
+            const idx = cartItems.findIndex(i => i.productId === productId);
+            if (idx === -1) return;
+            cartItems[idx].quantity += delta;
+            if (cartItems[idx].quantity <= 0) {
+                cartItems.splice(idx, 1);
+            }
+            renderCart();
+            await syncCartToFirestore();
+        };
+
+        window.removeCartItem = async (productId) => {
+            cartItems = cartItems.filter(i => i.productId !== productId);
+            renderCart();
+            await syncCartToFirestore();
+        };
+
+        window.clearCart = async () => {
+            cartItems = [];
+            renderCart();
+            await syncCartToFirestore();
+        };
+
+        function renderCart() {
+            const totalQty = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+            const totalAmount = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+            document.getElementById('cart-badge').innerText = totalQty;
+            document.getElementById('cart-items-subtitle').innerText = `${totalQty} productos seleccionados`;
+            document.getElementById('cart-total-amount').innerText = formatCOP(totalAmount);
+
+            const container = document.getElementById('cart-items-container');
+            const checkoutSec = document.getElementById('checkout-section');
+            const footerSec = document.getElementById('cart-footer');
+
+            if (cartItems.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 space-y-3">
+                        <div class="w-16 h-16 mx-auto rounded-full bg-violeta-100 text-violeta-400 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                        </div>
+                        <p class="font-serif font-bold text-lg text-violeta-950">Tu carrito está vacío</p>
+                        <p class="text-xs text-slate-500">Explora nuestras artesanías en madera y añade tus favoritas.</p>
+                    </div>
+                `;
+                checkoutSec.classList.add('hidden');
+                footerSec.classList.add('hidden');
+                return;
+            }
+
+            checkoutSec.classList.remove('hidden');
+            footerSec.classList.remove('hidden');
+
+            container.innerHTML = cartItems.map(item => `
+                <div class="flex items-center gap-3 p-3 rounded-2xl bg-violeta-50/60 border border-violeta-100">
+                    <img src="${item.imageUrl}" class="w-16 h-16 rounded-xl object-cover bg-white shrink-0" onerror="this.src='https://placehold.co/100x100/e9d5ff/6b21a8?text=Art'">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-sm text-violeta-950 truncate">${item.name}</h4>
+                        <p class="text-xs font-bold text-madera-600">${formatCOP(item.price)}</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <button onclick="updateCartQuantity('${item.productId}', -1)" class="w-6 h-6 rounded-lg bg-white border border-violeta-200 text-xs font-bold hover:bg-violeta-100">-</button>
+                            <span class="text-xs font-bold w-5 text-center">${item.quantity}</span>
+                            <button onclick="updateCartQuantity('${item.productId}', 1)" class="w-6 h-6 rounded-lg bg-white border border-violeta-200 text-xs font-bold hover:bg-violeta-100">+</button>
+                        </div>
+                    </div>
+                    <button onclick="removeCartItem('${item.productId}')" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // =====================================================================
+        // 6. GEOLOCALIZACIÓN PARA DIRECCIÓN DE ENTREGA (GPS + NOMINATIM)
+        // =====================================================================
+        window.captureGeolocation = (targetContext) => {
+            if (!navigator.geolocation) {
+                return showToast('Tu navegador no soporta geolocalización GPS.', 'error');
+            }
+
+            showToast('Obteniendo coordenadas GPS exactas...', 'info');
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = Number(position.coords.latitude.toFixed(6));
+                    const lng = Number(position.coords.longitude.toFixed(6));
+                    let formattedAddress = `Lat: ${lat}, Lng: ${lng}`;
+
+                    try {
+                        // Geocodificación inversa con OpenStreetMap Nominatim
+                        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.display_name) formattedAddress = data.display_name;
+                        }
+                    } catch (e) {
+                        console.warn('Reverse geocoding fallback:', e);
+                    }
+
+                    if (targetContext === 'checkout') {
+                        checkoutGeoData = { lat, lng, address: formattedAddress };
+                        document.getElementById('checkout-address').value = formattedAddress;
+                        document.getElementById('checkout-geo-box').classList.remove('hidden');
+                        document.getElementById('checkout-coords-text').innerText = `Latitud: ${lat} | Longitud: ${lng}`;
+                        document.getElementById('checkout-map-link').href = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=16/${lat}/${lng}`;
+                    } else if (targetContext === 'profile') {
+                        profileGeoData = { lat, lng };
+                        document.getElementById('profile-address').value = formattedAddress;
+                        const pEl = document.getElementById('profile-gps-coords');
+                        pEl.innerText = `GPS Capturado: ${lat}, ${lng}`;
+                        pEl.classList.remove('hidden');
+                    }
+
+                    showToast('¡Ubicación GPS asociada correctamente!', 'success');
+                },
+                (err) => {
+                    showToast(`No se pudo obtener ubicación: ${err.message}`, 'error');
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        };
+
+        // =====================================================================
+        // 7. PASARELA DE PAGOS EPAYCO + REGISTRO DE ORDEN EN FIRESTORE
+        // =====================================================================
+        window.initiateEpaycoCheckout = () => {
+            if (!currentUserProfile) {
+                toggleCartDrawer(false);
+                openAuthModal('login');
+                return showToast('Inicia sesión para completar tu compra y guardar tu orden.', 'warning');
+            }
+
+            const customerName = document.getElementById('checkout-name').value.trim();
+            const deliveryAddress = document.getElementById('checkout-address').value.trim();
+            const notes = document.getElementById('checkout-notes').value.trim();
+
+            if (!customerName || !deliveryAddress) {
+                return showToast('Por favor completa el nombre y la dirección de entrega.', 'warning');
+            }
+
+            const totalAmount = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+            const referenceCode = `ANT-${Date.now().toString().slice(-6)}`;
+            const description = cartItems.map(i => `${i.name} (x${i.quantity})`).join(', ');
+
+            pendingOrderPayload = {
+                referenceCode,
+                userId: currentUserProfile.uid,
+                customerName,
+                customerEmail: currentUserProfile.email,
+                deliveryAddress,
+                geoCoords: checkoutGeoData || currentUserProfile.coords || null,
+                notes,
+                items: [...cartItems],
+                totalAmount,
+                orderStatus: 'En Fabricación'
+            };
+
+            // Intentar abrir SDK oficial de ePayco si está disponible
+            try {
+                if (window.ePayco && window.ePayco.checkout) {
+                    const handler = window.ePayco.checkout.configure({
+                        key: '491d6a0b6e992cf924edd8d3d088aff1', // Llave pública de pruebas ePayco
+                        test: true
+                    });
+                    handler.open({
+                        name: "Antonia Art — Artesanía en Madera",
+                        description: description.slice(0, 120),
+                        invoice: referenceCode,
+                        currency: "cop",
+                        amount: String(totalAmount),
+                        tax_base: "0",
+                        tax: "0",
+                        country: "co",
+                        lang: "es",
+                        external: "false",
+                        name_billing: customerName,
+                        address_billing: deliveryAddress,
+                        email_billing: currentUserProfile.email
+                    });
+                }
+            } catch (sdkErr) {
+                console.warn('ePayco SDK popup notice:', sdkErr);
+            }
+
+            // Mostrar modal de confirmación de transacción para cerrar el ciclo en Firestore
+            document.getElementById('epayco-ref-display').innerText = referenceCode;
+            document.getElementById('epayco-amount-display').innerText = formatCOP(totalAmount);
+            document.getElementById('epayco-confirm-modal').classList.remove('hidden');
+        };
+
+        window.closeEpaycoModal = () => {
+            document.getElementById('epayco-confirm-modal').classList.add('hidden');
+        };
+
+        window.finalizeOrderTransaction = async (paymentStatus) => {
+            if (!pendingOrderPayload) return;
+
+            try {
+                const refPayco = `EPAY-${Math.floor(10000000 + Math.random() * 90000000)}`;
+                const orderRecord = {
+                    ...pendingOrderPayload,
+                    refPayco,
+                    paymentGateway: 'ePayco',
+                    paymentStatus, // 'Aceptada' | 'Pendiente'
+                    orderStatus: paymentStatus === 'Aceptada' ? 'Pagado / En Fabricación' : 'Pendiente de Pago',
+                    createdAt: new Date().toISOString()
+                };
+
+                await addDoc(getPublicCol('orders'), orderRecord);
+
+                // Descontar stock en Firestore si fue aceptada
+                if (paymentStatus === 'Aceptada') {
+                    for (const item of pendingOrderPayload.items) {
+                        const prod = allProducts.find(p => p.id === item.productId);
+                        if (prod && prod.stock >= item.quantity) {
+                            await updateDoc(getPublicDoc('products', prod.id), {
+                                stock: prod.stock - item.quantity
+                            });
+                        }
+                    }
+                }
+
+                await clearCart();
+                closeEpaycoModal();
+                toggleCartDrawer(false);
+                switchView('ordenes');
+                showToast(`¡Orden ${orderRecord.referenceCode} registrada! Estado ePayco: ${paymentStatus}`, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Error al registrar la orden en Firestore.', 'error');
+            }
+        };
+
+        window.updateOrderStatus = async (orderId, newStatus) => {
+            try {
+                await updateDoc(getPublicDoc('orders', orderId), {
+                    orderStatus: newStatus,
+                    updatedAt: new Date().toISOString()
+                });
+                showToast(`Estado de orden actualizado a: ${newStatus}`, 'success');
+            } catch (err) {
+                showToast('Error al actualizar estado de orden.', 'error');
+            }
+        };
+
+        function renderOrdersList() {
+            const container = document.getElementById('orders-list');
+            if (!currentUserProfile) return;
+
+            const isStaff = currentUserProfile.role === 'admin' || currentUserProfile.role === 'artesano';
+            document.getElementById('orders-view-title').innerText = isStaff 
+                ? 'Panel Global de Órdenes y Entregas' 
+                : 'Mis Órdenes de Compra';
+
+            const visibleOrders = isStaff 
+                ? allOrders 
+                : allOrders.filter(o => o.userId === currentUserProfile.uid);
+
+            // Ordenar por fecha más reciente en memoria
+            visibleOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            if (visibleOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-12 rounded-3xl border border-violeta-100 text-center space-y-3">
+                        <i class="fa-solid fa-box-open text-4xl text-violeta-300"></i>
+                        <h3 class="font-serif font-bold text-xl text-violeta-950">Aún no hay órdenes registradas</h3>
+                        <p class="text-sm text-slate-500">Cuando realices una compra con ePayco aparecerá aquí con su seguimiento GPS.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = visibleOrders.map(o => `
+                <div class="bg-white p-6 rounded-3xl border border-violeta-100 shadow-sm space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-violeta-50 pb-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-mono font-bold text-sm text-violeta-900 bg-violeta-100 px-3 py-1 rounded-lg">${o.referenceCode}</span>
+                                <span class="text-xs font-bold px-2.5 py-1 rounded-full ${o.paymentStatus === 'Aceptada' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                                    ePayco: ${o.paymentStatus} (${o.refPayco})
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Cliente: <strong>${o.customerName}</strong> • ${new Date(o.createdAt).toLocaleString('es-CO')}</p>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <span class="font-serif font-bold text-xl text-violeta-950">${formatCOP(o.totalAmount)}</span>
+                            ${isStaff ? `
+                                <select onchange="updateOrderStatus('${o.id}', this.value)" class="text-xs font-bold px-3 py-2 rounded-xl border border-violeta-200 bg-violeta-50 text-violeta-900">
+                                    ${['Pagado / En Fabricación', 'En Tallado y Acabado', 'Enviado', 'Entregado'].map(st => 
+                                        `<option value="${st}" ${o.orderStatus === st ? 'selected' : ''}>${st}</option>`
+                                    ).join('')}
+                                </select>
+                            ` : `
+                                <span class="bg-madera-100 text-madera-800 text-xs font-bold px-3 py-1.5 rounded-xl">${o.orderStatus}</span>
+                            `}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="space-y-1">
+                            <p class="font-bold text-slate-700 uppercase">Productos incluidos:</p>
+                            <ul class="space-y-1 text-slate-600">
+                                ${(o.items || []).map(i => `<li>• ${i.name} <strong>(x${i.quantity})</strong> — ${formatCOP(i.price * i.quantity)}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div class="bg-violeta-50/70 p-3.5 rounded-2xl border border-violeta-100 space-y-1">
+                            <p class="font-bold text-violeta-950"><i class="fa-solid fa-location-dot text-violeta-700 mr-1"></i> Dirección de Entrega:</p>
+                            <p class="text-slate-600">${o.deliveryAddress}</p>
+                            ${o.geoCoords ? `
+                                <a href="https://www.openstreetmap.org/?mlat=${o.geoCoords.lat}&mlon=${o.geoCoords.lng}#map=16/${o.geoCoords.lat}/${o.geoCoords.lng}" target="_blank" class="inline-block text-emerald-700 font-bold underline mt-1">
+                                    GPS: ${o.geoCoords.lat}, ${o.geoCoords.lng} (Ver Mapa ↗)
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // =====================================================================
+        // INICIALIZACIÓN DE listeners EN TIEMPO REAL DE FIRESTORE
+        // =====================================================================
+        async function initRealtimeListeners() {
+            // 1. Escuchar Productos en tiempo real
+            onSnapshot(getPublicCol('products'), async (snapshot) => {
+                document.getElementById('catalog-loading').classList.add('hidden');
+                if (snapshot.empty) {
+                    // Sembrar productos iniciales si la colección está vacía
+                    for (const item of SEED_PRODUCTS) {
+                        await addDoc(getPublicCol('products'), { ...item, createdAt: new Date().toISOString() });
+                    }
+                    return;
+                }
+                allProducts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderCatalogGrid();
+                renderAdminProductsTable();
+            }, (err) => console.error('Products snapshot error:', err));
+
+            // 2. Escuchar Usuarios en tiempo real
+            onSnapshot(getPublicCol('users'), (snapshot) => {
+                allUsers = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderUsersTable();
+            }, (err) => console.error('Users snapshot error:', err));
+
+            // 3. Escuchar Órdenes en tiempo real
+            onSnapshot(getPublicCol('orders'), (snapshot) => {
+                allOrders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderOrdersList();
+            }, (err) => console.error('Orders snapshot error:', err));
+        }
+
+        // Arranque de Autenticación y Listeners (Regla 3: Auth antes de consultas)
+        (async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else if (!auth.currentUser) {
+                    await signInAnonymously(auth);
+                }
+            } catch (authErr) {
+                console.warn('Initial auth fallback:', authErr);
+            }
+
+            onAuthStateChanged(auth, async (user) => {
+                currentAuthUser = user;
+                if (user && !user.isAnonymous) {
+                    await loadUserProfile(user);
+                }
+            });
+
+            await initRealtimeListeners();
+            renderCart();
+        })();
+    </script>
+</body>
+</html>
